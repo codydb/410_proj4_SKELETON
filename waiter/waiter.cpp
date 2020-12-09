@@ -1,9 +1,8 @@
 #include <string>
 #include "stdlib.h"
-#include <externs.h>
-
+#include "../includes/externs.h"
 #include "../includes/waiter.h"
-
+#include "../includes/PRINT.h"
 using namespace std;
 
 mutex waiterMutex;
@@ -30,11 +29,14 @@ void Waiter::beWaiter() {
 		ORDER temp;
 		next = getNext(temp);
 		if (next == SUCCESS){
+			lock_guard<mutex> lck(mutex_order_outQ);
+			PRINT2("Bewaiter pushing order: ", temp.order_number);
 			order_in_Q.push(temp);
 		}else {
 			b_WaiterIsFinished = true;
 		}
 		//signals Bakers that a new order is in queue or waiter is done
+		PRINT1("notify baker");
 		cv_order_inQ.notify_all();
 
 	}
