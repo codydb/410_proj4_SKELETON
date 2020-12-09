@@ -1,6 +1,8 @@
 #include "../includes/logger.h"
 using namespace std;
 
+mutex(m);
+
 Logger::Logger(std::string filename) {
 	this->filename = filename;
 }
@@ -18,6 +20,9 @@ void Logger::clearlogfile() {
 }
 
 void Logger::log(std::string data) {
+	// lock prevent multiple changes to the file at the same time.
+	// mutex will be unlocked if exception occurs.
+	lock_guard<mutex> lck(m);
 	myFile.open(filename, std::fstream::app);
 	if (!myFile.is_open())
 		return;
