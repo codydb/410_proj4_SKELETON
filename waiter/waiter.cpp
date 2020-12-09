@@ -1,5 +1,6 @@
 #include <string>
 #include "stdlib.h"
+
 #include "../includes/externs.h"
 #include "../includes/waiter.h"
 #include "../includes/PRINT.h"
@@ -17,7 +18,7 @@ Waiter::~Waiter()
 //gets next Order(s) from file_IO
 int Waiter::getNext(ORDER &anOrder){
 	//lock guard so no two waiters grab the same order
-	lock_guard<mutex> lock(waiterMutex);
+	//lock_guard<mutex> lock(waiterMutex);
 	return myIO.getNext(anOrder);;
 }
 
