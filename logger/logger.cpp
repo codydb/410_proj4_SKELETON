@@ -12,6 +12,7 @@ Logger::~Logger() {
 
 //open close and clear the log file
 void Logger::clearlogfile() {
+	lock_guard<mutex> lck(m);
 	myFile.open(filename, std::fstream::trunc);
 
 	//close file
