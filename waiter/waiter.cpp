@@ -1,12 +1,12 @@
 #include <string>
 #include "stdlib.h"
+#include <thread>
 
 #include "../includes/externs.h"
 #include "../includes/waiter.h"
 #include "../includes/PRINT.h"
 using namespace std;
 
-mutex waiterMutex;
 
 Waiter::Waiter(int id,std::string filename):id(id),myIO(filename){
 }
@@ -27,20 +27,26 @@ void Waiter::beWaiter() {
 	int next = SUCCESS;
 	//gets new orders until getNext runs out, then signals b_WaiterIsFinished
 	while (next == SUCCESS){
+
+		//std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
 		ORDER temp;
 		next = getNext(temp);
 		if (next == SUCCESS){
-			unique_lock<mutex> lck(mutex_order_inQ);
-			PRINT4("Be waiter ", id, " pushing order: ", temp.order_number);
+//			unique_lock<mutex> lck(mutex_order_inQ);
+			std::unique_lock<mutex> lck(mutex_order_inQ);
+			//PRINT4("Be waiter ", id, " pushing order: ", temp.order_number);
 			order_in_Q.push(temp);
+			cv_order_inQ.notify_all();
 		} else {
-			unique_lock<mutex> lck(mutex_order_inQ);
+//			unique_lock<mutex> lck(mutex_order_inQ);
+			std::unique_lock<mutex> lck(mutex_order_inQ);
 			b_WaiterIsFinished = true;
 			cv_order_inQ.notify_all();
 		}
 		//signals Bakers that a new order is in queue or waiter is done
-		PRINT3("Waiter ", id ," notify baker");
-		cv_order_inQ.notify_all();
+		//PRINT3("Waiter ", id ," notify baker");
+		//cv_order_inQ.notify_all();
 	}
 }
 

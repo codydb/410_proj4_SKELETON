@@ -87,13 +87,16 @@ void audit_results() {
 
 int main()
 {
+
+	thread waiter3(doWaiter,3 ,"in3.txt");
+
 	thread baker1(doBaker,1);
 	thread baker2(doBaker,2);
 	thread baker3(doBaker,3);
 
 //	thread waiter1(doWaiter,1 ,"in1.txt");
 //	thread waiter2(doWaiter,2 ,"in2.txt");
-	thread waiter3(doWaiter,3 ,"in3.txt");
+//	thread waiter3(doWaiter,3 ,"in3.txt");
 
 	baker1.join();
 	baker2.join();
