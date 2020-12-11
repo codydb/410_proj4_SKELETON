@@ -18,14 +18,12 @@ void Baker::bake_and_box(ORDER &anOrder) {
 	int numDonutInBox = 0;
 	for (int i = 0; i < anOrder.number_donuts; i++) {
 
-		//PRINT3("Baker ", id, " puts 1 donut into box");
 		numDonutInBox++;
 		DONUT donut;
 		aBox.addDonut(donut);
 
 		// > 12 donuts, push a box into vector, then clear.
 		if (numDonutInBox % DOZEN == 0) {
-			//PRINT1("Switching box");
 			lock_guard<mutex> lck(mutex_order_outQ);
 			anOrder.boxes.push_back(aBox);
 			aBox.clear();
@@ -45,7 +43,7 @@ void Baker::beBaker() {
 //	{
 //		std::unique_lock<mutex> lck(mutex_order_inQ);
 //
-//		while (!b_WaiterIsFinished) {
+//		while (!b_WaiterIsFinished && order_in_Q.empty()) {
 //			cv_order_inQ.wait(lck);
 //		}
 //	}
@@ -53,12 +51,12 @@ void Baker::beBaker() {
 	while (true) {
 		unique_lock<mutex> lck(mutex_order_inQ);
 
-		if (b_WaiterIsFinished && order_in_Q.empty()) {
-			break;
-		}
-
 		while (!b_WaiterIsFinished && order_in_Q.empty())
 			cv_order_inQ.wait(lck);
+
+		if (b_WaiterIsFinished && order_in_Q.empty()) {
+					break;
+				}
 
 		if (!order_in_Q.empty()) {
 
